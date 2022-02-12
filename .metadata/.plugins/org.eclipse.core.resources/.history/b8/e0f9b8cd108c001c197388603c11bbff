@@ -1,0 +1,5 @@
+package com.cts.company.service;
+
+public interface ICompanyService {
+
+}
