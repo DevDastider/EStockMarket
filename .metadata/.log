@@ -264,3 +264,72 @@ java.util.concurrent.TimeoutException
 
 !ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:32:55.226
 !MESSAGE ClasspathListenerHandler removeClasspathListener sts4.classpath.pwsbuenf => OK
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:03.533
+!MESSAGE Entering DelegatingStreamConnectionProvider()
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:03.533
+!MESSAGE DelegatingStreamConnectionProvider classloader = org.eclipse.osgi.internal.loader.EquinoxClassLoader@67954d71[org.springframework.tooling.boot.ls:1.13.0.201911200938(id=632)]
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:03.533
+!MESSAGE SpringBootLanguageServer exists!
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.813
+!MESSAGE Boot LS startup time from start to initialized: 4280ms
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.955
+!MESSAGE ClasspathListenerHandler addClasspathListener sts4.classpath.gbzmxLBVisBatched = true
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.970
+!MESSAGE subscribing to classpath changes: sts4.classpath.gbzmxLBV isBatched = true
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.970
+!MESSAGE Setting up ClasspathListenerManager
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.970
+!MESSAGE subsribers = {sts4.classpath.gbzmxLBV=Send Classpath Notifications(1405)}
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.970
+!MESSAGE Sending initial event for all projects ...
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.970
+!MESSAGE project UserManagementApp ...
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.970
+!MESSAGE project CompanyManagementApp ...
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.974
+!MESSAGE Sending initial event for all projects DONE
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.974
+!MESSAGE ClasspathListenerHandler addClasspathListener sts4.classpath.gbzmxLBV => OK
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.974
+!MESSAGE Preparing classpath changed notification UserManagementApp
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.974
+!MESSAGE exists = true open = true => deleted = false
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.981
+!MESSAGE classpath=91 entries
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.987
+!MESSAGE buffering callback sts4.classpath.gbzmxLBV UserManagementApp false 91
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.987
+!MESSAGE Preparing classpath changed notification CompanyManagementApp
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.987
+!MESSAGE exists = true open = true => deleted = false
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.990
+!MESSAGE classpath=90 entries
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.990
+!MESSAGE buffering callback sts4.classpath.gbzmxLBV CompanyManagementApp false 90
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:07.990
+!MESSAGE executing callback sts4.classpath.gbzmxLBV 2 batched events
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2022-02-12 20:42:08.094
+!MESSAGE executing callback sts4.classpath.gbzmxLBV SUCCESS [done]
