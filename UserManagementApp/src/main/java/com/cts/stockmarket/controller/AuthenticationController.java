@@ -84,4 +84,9 @@ public class AuthenticationController {
 		}
 		return new ResponseEntity<String>("Data not inserted!", HttpStatus.CONFLICT);
 	}
+	
+	@GetMapping("/getToken")
+	public ResponseEntity<?> getToken() {
+		return new ResponseEntity<String>(map.get("token"), HttpStatus.OK);
+	}
 }
