@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.cts.stockmarket.controller.ConsumerController;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
@@ -33,7 +31,7 @@ public class JWTFilter extends GenericFilterBean {
 		
 		String jwtToken= "";
 		try{
-			jwtToken=new ConsumerController().getUserToken(); 
+			//jwtToken= ConsumerController.getUserToken(); 
 			System.out.println(jwtToken);
 		}catch(Exception e) {
 			e.printStackTrace();

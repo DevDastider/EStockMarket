@@ -4,8 +4,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import com.cts.stockmarket.exceptions.CompanyIDAlreadyExistsException;
 import com.cts.stockmarket.model.Company;
@@ -29,10 +37,16 @@ public class CompanyController {
 	
 	@Autowired
 	private ICompanyService companyService;
+	
+	@Autowired
+	private DiscoveryClient discoveryClient;
 
 	@GetMapping("/company/getall")
-	public ResponseEntity<?> getAllCompanysDetails() {
+	public ResponseEntity<?> getAllCompanysDetails() throws RestClientException, Exception {
+		System.out.println("JwtToken: "+getUserToken());
+		
 		List<Company> companyList = companyService.getAllCompanyDetails();
+		
 		if (companyList != null) {
 			CacheControl cacheControl=CacheControl.maxAge(5,TimeUnit.MINUTES);
 			
@@ -109,6 +123,35 @@ public class CompanyController {
 		  
 		  return ResponseHandler.generateResponse("Price updation not possible", HttpStatus.INTERNAL_SERVER_ERROR, "Updation not possible");
 	  }
+	  
+	//Function to fetch user token from user micro-service
+	  public String getUserToken() throws RestClientException, Exception{
+			List<ServiceInstance> instances= discoveryClient.getInstances("user-producer");
+			//System.out.println(instances.toString());
+			ServiceInstance serviceInstance= instances.get(0);
+			
+			String baseUrl= serviceInstance.getUri().toString();
+			
+			ResponseEntity<String> response =null;
+			
+			try {
+				RestTemplate restTemplate= new RestTemplate();
+				baseUrl += "/auth/v1.0/getToken";
+				response= restTemplate.exchange(baseUrl, HttpMethod.GET, getHeaders(), String.class);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			//System.out.println(response.getBody());
+			return response.getBody();
+		}
+		
+		private static HttpEntity<?> getHeaders() throws Exception
+		{
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			return new HttpEntity<>(headers);
+		}
 
 
 }
