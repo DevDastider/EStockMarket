@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cts.stockmarket.exceptions.CompanyIDAlreadyExistsException;
 import com.cts.stockmarket.model.Company;
 import com.cts.stockmarket.repository.CompanyRepository;
 
@@ -16,11 +17,14 @@ public class CompanyServiceImpl implements ICompanyService {
 	private CompanyRepository companyRepository;
 	
 	@Override
-	public Company addCompany(Company company) {
-		if(company != null) {
-			return companyRepository.saveAndFlush(company);
+	public Company addCompany(Company company) throws CompanyIDAlreadyExistsException{
+		if(company!=null) {
+			Optional<Company> optional = companyRepository.findById(company.getCompanyCode());
+			if(optional.isPresent()) {
+				throw new CompanyIDAlreadyExistsException();
+			}
 		}
-		return null;
+		return companyRepository.saveAndFlush(company);
 	}
 
 	@Override

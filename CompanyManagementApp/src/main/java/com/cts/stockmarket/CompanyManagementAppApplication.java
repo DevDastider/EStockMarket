@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import com.cts.stockmarket.filter.JWTFilter;
 
 @SpringBootApplication
-@EnableDiscoveryClient
 public class CompanyManagementAppApplication {
 	
 	@Bean
