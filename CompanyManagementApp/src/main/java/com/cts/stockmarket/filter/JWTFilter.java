@@ -15,6 +15,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
 public class JWTFilter extends GenericFilterBean {
+	
+//	private String jwt;
+//	
+//	public JWTFilter(String jwt) {
+//		super();
+//		this.jwt = jwt;
+//	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -30,13 +37,12 @@ public class JWTFilter extends GenericFilterBean {
 		}
 		
 		String jwtToken= authHeader.substring(7);
-		
+		//if(jwtToken.equals(jwt)) {
 		Claims claims= Jwts.parser().setSigningKey("secret key").parseClaimsJws(jwtToken).getBody();
 		
 		httpRequest.setAttribute("username", claims);
-		
+		//}
 		chain.doFilter(request, response);
 	}
-
 }
 

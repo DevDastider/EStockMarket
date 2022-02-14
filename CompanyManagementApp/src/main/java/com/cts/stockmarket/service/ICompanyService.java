@@ -7,7 +7,7 @@ import com.cts.stockmarket.model.Company;
 
 public interface ICompanyService {
 	
-public Company addCompany(Company company) throws CompanyIDAlreadyExistsException;		//Registering new company
+	public Company addCompany(Company company) throws CompanyIDAlreadyExistsException;		//Registering new company
 	
 	public Company getCompanyDetailsById(int companyCode);								//Fetch a particular company details
 	

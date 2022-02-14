@@ -28,8 +28,8 @@ import org.springframework.web.client.RestTemplate;
 import com.cts.stockmarket.exceptions.CompanyIDAlreadyExistsException;
 import com.cts.stockmarket.model.Company;
 import com.cts.stockmarket.response.ResponseHandler;
+import com.cts.stockmarket.service.DataPublisher;
 import com.cts.stockmarket.service.ICompanyService;
-
 
 @RestController
 @RequestMapping("/api/v1.0/market")
@@ -40,10 +40,13 @@ public class CompanyController {
 	
 	@Autowired
 	private DiscoveryClient discoveryClient;
+	
+	@Autowired
+	private DataPublisher dataPublisher;
 
 	@GetMapping("/company/getall")
 	public ResponseEntity<?> getAllCompanysDetails() throws RestClientException, Exception {
-		System.out.println("JwtToken: "+getUserToken());
+		System.out.println("JwtToken: " + getUserToken());
 		
 		List<Company> companyList = companyService.getAllCompanyDetails();
 		
@@ -75,7 +78,7 @@ public class CompanyController {
 		// Checking whether company turnover is greater than 10Cr.
 		if (company.getCompanyTurnover() > 100000000) {
 			if (companyService.addCompany(company) != null) {
-				return ResponseHandler.generateResponse("Succesfully data added", HttpStatus.CREATED, company);	//new ResponseEntity<Company>(company, HttpStatus.CREATED);
+				return ResponseHandler.generateResponse("Succesfully data added", HttpStatus.CREATED, company);
 			} else
 				return ResponseHandler.generateResponse("Sorry data is not inserted!", HttpStatus.CONFLICT, "Company code exists");	//new ResponseEntity<String>("Sorry data is not inserted!", HttpStatus.CONFLICT);
 		} else
@@ -115,17 +118,25 @@ public class CompanyController {
 		  Company existingCompany= companyService.getCompanyDetailsById(companyCode);
 		  
 		  if (existingCompany!=null) {
+			  double prevPrice= existingCompany.getStockPrice();
 			  existingCompany.setStockPrice(stockPrice);
 			  
-			  if(companyService.updateStockPrice(existingCompany))
-				  return ResponseHandler.generateResponse("Price updated", HttpStatus.CREATED, existingCompany);//new ResponseEntity<Company>(existingCompany,HttpStatus.CREATED);	  
+			  if(companyService.updateStockPrice(existingCompany)) {
+				  //Adding update in Kafka
+				  String updateMsg= existingCompany.getCompanyName()+ "-> Previous price: "+ prevPrice + "New Price: "+ stockPrice; 
+				  dataPublisher.setTemplate(updateMsg);
+			  
+				  return ResponseHandler.generateResponse("Price updated", HttpStatus.CREATED, existingCompany);
+			  }
 		  }
 		  
 		  return ResponseHandler.generateResponse("Price updation not possible", HttpStatus.INTERNAL_SERVER_ERROR, "Updation not possible");
 	  }
 	  
+	  
+	  
 	//Function to fetch user token from user micro-service
-	  public String getUserToken() throws RestClientException, Exception{
+	public String getUserToken() throws RestClientException, Exception{
 			List<ServiceInstance> instances= discoveryClient.getInstances("user-producer");
 			//System.out.println(instances.toString());
 			ServiceInstance serviceInstance= instances.get(0);
@@ -133,7 +144,7 @@ public class CompanyController {
 			String baseUrl= serviceInstance.getUri().toString();
 			
 			ResponseEntity<String> response =null;
-			
+				
 			try {
 				RestTemplate restTemplate= new RestTemplate();
 				baseUrl += "/auth/v1.0/getToken";
@@ -142,16 +153,13 @@ public class CompanyController {
 			catch(Exception e) {
 				e.printStackTrace();
 			}
-			//System.out.println(response.getBody());
+				//System.out.println(response.getBody());
 			return response.getBody();
 		}
-		
-		private static HttpEntity<?> getHeaders() throws Exception
-		{
+			
+		private static HttpEntity<?> getHeaders() throws Exception{
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			return new HttpEntity<>(headers);
 		}
-
-
 }

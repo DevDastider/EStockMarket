@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cts.stockmarket.exceptions.UserIdAlreadyExistsException;
 import com.cts.stockmarket.model.User;
 import com.cts.stockmarket.service.UserServiceImpl;
 
@@ -78,7 +79,7 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping(value="/addUser", consumes="application/json; charset=utf-8")
-	public ResponseEntity<?> addUser(@RequestBody User user){
+	public ResponseEntity<?> addUser(@RequestBody User user) throws UserIdAlreadyExistsException{
 		if(userServiceImpl.addUser(user)!=null){
 			return new ResponseEntity<User>(user, HttpStatus.CREATED);
 		}

@@ -1,5 +1,8 @@
 package com.cts.stockmarket.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -14,6 +17,7 @@ public class Company {
 	private String companyWebsite;
 	private String stockExchange;
 	private double stockPrice;
+	private String timeStamp;
 	
 	public int getCompanyCode() {
 		return companyCode;
@@ -56,6 +60,15 @@ public class Company {
 	}
 	public void setStockPrice(double stockPrice) {
 		this.stockPrice = stockPrice;
+	}
+	public String getTimeStamp() {
+		return timeStamp;
+	}
+	public void setTimeStamp() {
+		System.out.println("Triggered");
+		SimpleDateFormat timeformat= new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+		this.timeStamp = timeformat.format(new Date(System.currentTimeMillis()));
+		System.out.println("timestamp=" + this.timeStamp);
 	}
 	
 	public Company(int companyCode, String companyName, String companyCeo, double companyTurnover,
