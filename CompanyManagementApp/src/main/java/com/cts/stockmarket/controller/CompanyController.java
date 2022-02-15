@@ -112,28 +112,25 @@ public class CompanyController {
 			return ResponseHandler.generateResponse("Cannot be deleted", HttpStatus.INTERNAL_SERVER_ERROR, "Cannot delete due to internal error");
 	}
 
-	  @PutMapping(value="/stock/put/{sId}") 
-	  public ResponseEntity<?> updateStockPrice(@PathVariable("sId") int companyCode, @RequestParam("price") double stockPrice){
+	@PutMapping(value="/stock/put/{sId}") 
+	public ResponseEntity<?> updateStockPrice(@PathVariable("sId") int companyCode, @RequestBody Company company){
 		  
-		  Company existingCompany= companyService.getCompanyDetailsById(companyCode);
-		  
-		  if (existingCompany!=null) {
-			  double prevPrice= existingCompany.getStockPrice();
-			  existingCompany.setStockPrice(stockPrice);
+		Company existingCompany= companyService.getCompanyDetailsById(companyCode);
+		
+		if (existingCompany!=null) {
+			double prevPrice= existingCompany.getStockPrice();
+			existingCompany.setStockPrice(company.getStockPrice());
 			  
-			  if(companyService.updateStockPrice(existingCompany)) {
-				  //Adding update in Kafka
-				  String updateMsg= existingCompany.getCompanyName()+ "-> Previous price: "+ prevPrice + "New Price: "+ stockPrice; 
-				  dataPublisher.setTemplate(updateMsg);
+			if(companyService.updateStockPrice(existingCompany)) {
+				//Adding update in Kafka
+				String updateMsg= existingCompany.getCompanyName()+ "-> Previous price: "+ prevPrice + "New Price: "+ company.getStockExchange(); 
+				dataPublisher.setTemplate(updateMsg);
 			  
-				  return ResponseHandler.generateResponse("Price updated", HttpStatus.CREATED, existingCompany);
+				return ResponseHandler.generateResponse("Price updated", HttpStatus.CREATED, existingCompany);
 			  }
 		  }
-		  
-		  return ResponseHandler.generateResponse("Price updation not possible", HttpStatus.INTERNAL_SERVER_ERROR, "Updation not possible");
+		return ResponseHandler.generateResponse("Price updation not possible", HttpStatus.INTERNAL_SERVER_ERROR, "Updation not possible");
 	  }
-	  
-	  
 	  
 	//Function to fetch user token from user micro-service
 	public String getUserToken() throws RestClientException, Exception{
