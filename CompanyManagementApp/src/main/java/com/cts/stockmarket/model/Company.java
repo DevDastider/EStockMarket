@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 
 @Entity
 public class Company {
@@ -64,10 +65,13 @@ public class Company {
 	public String getTimeStamp() {
 		return timeStamp;
 	}
+	@PrePersist
 	public void setTimeStamp() {
 		System.out.println("Triggered");
-		SimpleDateFormat timeformat= new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-		this.timeStamp = timeformat.format(new Date(System.currentTimeMillis()));
+		if(this.timeStamp==null) {
+			SimpleDateFormat timeformat= new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			this.timeStamp = timeformat.format(new Date(System.currentTimeMillis()));
+		}
 		System.out.println("timestamp=" + this.timeStamp);
 	}
 	
