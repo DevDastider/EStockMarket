@@ -38,24 +38,25 @@ public class CompanyController {
 	@Autowired
 	private ICompanyService companyService;
 	
-	@Autowired
-	private DiscoveryClient discoveryClient;
+//	@Autowired
+//	private DiscoveryClient discoveryClient;
 	
 	@Autowired
 	private DataPublisher dataPublisher;
 
 	@GetMapping("/company/getall")
 	public ResponseEntity<?> getAllCompanysDetails() throws RestClientException, Exception {
-		System.out.println("JwtToken: " + getUserToken());
+		//System.out.println("JwtToken: " + getUserToken());
 		
 		List<Company> companyList = companyService.getAllCompanyDetails();
 		
 		if (companyList != null) {
-			CacheControl cacheControl=CacheControl.maxAge(5,TimeUnit.MINUTES);
+			//CacheControl cacheControl=CacheControl.maxAge(5,TimeUnit.MINUTES);
 			
-			return ResponseEntity.ok()
-					.cacheControl(cacheControl)
-					.body(ResponseHandler.generateResponse("Succesfully retrieved the data", HttpStatus.OK, companyList));
+//			return ResponseEntity.ok()
+//					.cacheControl(cacheControl)
+//					.body(ResponseHandler.generateResponse("Succesfully retrieved the data", HttpStatus.OK, companyList));
+			return (ResponseHandler.generateResponse("Succesfully retrieved the data", HttpStatus.OK, companyList));
 		}
 
 		return ResponseHandler.generateResponse("List Empty", HttpStatus.NO_CONTENT, "Company List is empty!");
@@ -118,13 +119,13 @@ public class CompanyController {
 		Company existingCompany= companyService.getCompanyDetailsById(companyCode);
 		
 		if (existingCompany!=null) {
-			double prevPrice= existingCompany.getStockPrice();
+			//double prevPrice= existingCompany.getStockPrice();
 			existingCompany.setStockPrice(company.getStockPrice());
 			  
 			if(companyService.updateStockPrice(existingCompany)) {
 				//Adding update in Kafka
-				String updateMsg= existingCompany.getCompanyName()+ "-> Previous price: "+ prevPrice + "New Price: "+ company.getStockExchange(); 
-				dataPublisher.setTemplate(updateMsg);
+//				String updateMsg= existingCompany.getCompanyName()+ "-> Previous price: "+ prevPrice + "New Price: "+ company.getStockExchange(); 
+//				dataPublisher.setTemplate(updateMsg);
 			  
 				return ResponseHandler.generateResponse("Price updated", HttpStatus.CREATED, existingCompany);
 			  }
@@ -133,30 +134,30 @@ public class CompanyController {
 	  }
 	  
 	//Function to fetch user token from user micro-service
-	public String getUserToken() throws RestClientException, Exception{
-			List<ServiceInstance> instances= discoveryClient.getInstances("user-producer");
-			//System.out.println(instances.toString());
-			ServiceInstance serviceInstance= instances.get(0);
-			
-			String baseUrl= serviceInstance.getUri().toString();
-			
-			ResponseEntity<String> response =null;
-				
-			try {
-				RestTemplate restTemplate= new RestTemplate();
-				baseUrl += "/auth/v1.0/getToken";
-				response= restTemplate.exchange(baseUrl, HttpMethod.GET, getHeaders(), String.class);
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-				//System.out.println(response.getBody());
-			return response.getBody();
-		}
-			
-		private static HttpEntity<?> getHeaders() throws Exception{
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-			return new HttpEntity<>(headers);
-		}
+//	public String getUserToken() throws RestClientException, Exception{
+//			List<ServiceInstance> instances= discoveryClient.getInstances("user-producer");
+//			//System.out.println(instances.toString());
+//			ServiceInstance serviceInstance= instances.get(0);
+//			
+//			String baseUrl= serviceInstance.getUri().toString();
+//			
+//			ResponseEntity<String> response =null;
+//				
+//			try {
+//				RestTemplate restTemplate= new RestTemplate();
+//				baseUrl += "/auth/v1.0/getToken";
+//				response= restTemplate.exchange(baseUrl, HttpMethod.GET, getHeaders(), String.class);
+//			}
+//			catch(Exception e) {
+//				e.printStackTrace();
+//			}
+//				//System.out.println(response.getBody());
+//			return response.getBody();
+//		}
+//			
+//		private static HttpEntity<?> getHeaders() throws Exception{
+//			HttpHeaders headers = new HttpHeaders();
+//			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+//			return new HttpEntity<>(headers);
+//		}
 }
