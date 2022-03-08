@@ -1,4 +1,4 @@
-package com.cts.company.controller;
+package com.cts.stockmarket.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -16,9 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -31,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(classes = CompanyControllerTest.class)
 public class CompanyControllerTest {
 	
 	@Mock
@@ -42,8 +39,6 @@ public class CompanyControllerTest {
 	
 	@Autowired
 	private MockMvc mockMvc;
-	
-	private List<Company> companyList= new ArrayList<>();
 	
 	private Company company= new Company();
 	
@@ -61,33 +56,7 @@ public class CompanyControllerTest {
 		company.setStockPrice(500);
 		company.setTimeStamp();
 	}
-	
-	@Test
-	public void getAllCompanySuccess() throws Exception{
-		companyList.add(company);
-		when(companyService.getAllCompanyDetails()).thenReturn(companyList);
 		
-		List<Company> checkList= companyService.getAllCompanyDetails();
-		assertEquals(companyList, checkList);
-		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/market/company/getall").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		
-	}
-	
-	@Test
-	public void getAllCompanyFailure() throws Exception{
-		companyList.clear();
-		when(companyService.getAllCompanyDetails()).thenReturn(companyList);
-		
-		List<Company> checkList= companyService.getAllCompanyDetails();
-		assertEquals(companyList, checkList);
-		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/market/company/getall").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		
-	}
-	
 	@Test
 	public void registerCompanySuccess() throws Exception{
 		

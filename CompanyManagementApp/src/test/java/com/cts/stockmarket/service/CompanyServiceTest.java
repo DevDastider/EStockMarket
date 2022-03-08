@@ -1,4 +1,4 @@
-package com.cts.company.service;
+package com.cts.stockmarket.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -26,7 +25,6 @@ import com.cts.stockmarket.service.CompanyServiceImpl;
 
 @AutoConfigureMockMvc
 @SpringBootTest
-@ContextConfiguration(classes= CompanyServiceTest.class)
 public class CompanyServiceTest {
 	
 	@Mock

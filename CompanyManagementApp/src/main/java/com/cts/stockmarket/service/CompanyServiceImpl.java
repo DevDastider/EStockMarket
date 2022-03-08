@@ -64,6 +64,7 @@ public class CompanyServiceImpl implements ICompanyService {
 		if(existingCompany!=null) {
 			existingCompany.setStockPrice(company.getStockPrice());
 			companyRepository.saveAndFlush(existingCompany);
+
 			return true;
 		}
 		else

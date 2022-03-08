@@ -2,16 +2,23 @@ package com.cts.stockmarket.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 
 @Entity
 public class Company {
 	
 	@Id
-	private int companyCode;
+	@Column(name = "companyCode")
+	private Integer companyCode;
 	private String companyName;
 	private String companyCeo;
 	private double companyTurnover;
@@ -19,6 +26,10 @@ public class Company {
 	private String stockExchange;
 	private double stockPrice;
 	private String timeStamp;
+	
+	@OneToMany(targetEntity = Stock.class)//, cascade = CascadeType.REMOVE)
+//	@JoinColumn(name="cs_fk", referencedColumnName = "companyCode")
+	private List<Stock> stockList;
 	
 	public int getCompanyCode() {
 		return companyCode;
@@ -69,14 +80,25 @@ public class Company {
 	public void setTimeStamp() {
 		System.out.println("Triggered");
 		if(this.timeStamp==null) {
-			SimpleDateFormat timeformat= new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			SimpleDateFormat timeformat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			timeformat.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 			this.timeStamp = timeformat.format(new Date(System.currentTimeMillis()));
 		}
 		System.out.println("timestamp=" + this.timeStamp);
 	}
+	public List<Stock> getStockList() {
+		return stockList;
+	}
+	public void setStockList(List<Stock> stockList) {
+		this.stockList = stockList;
+	}	
 	
+	public Company() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public Company(int companyCode, String companyName, String companyCeo, double companyTurnover,
-			String companyWebsite, String stockExchange, double stockPrice) {
+			String companyWebsite, String stockExchange, double stockPrice, String timeStamp, List<Stock> stockList) {
 		super();
 		this.companyCode = companyCode;
 		this.companyName = companyName;
@@ -85,10 +107,8 @@ public class Company {
 		this.companyWebsite = companyWebsite;
 		this.stockExchange = stockExchange;
 		this.stockPrice = stockPrice;
-	}
-	public Company() {
-		super();
-		// TODO Auto-generated constructor stub
+		this.timeStamp = timeStamp;
+		this.stockList = stockList;
 	}
 
 }

@@ -80,7 +80,6 @@
 		    <artifactId>h2</artifactId>
 		    <scope>runtime</scope>
 		</dependency>
-		
 	</dependencies>
 
 	<build>
@@ -90,6 +89,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>EStockMarket-final</finalName>
 	</build>
 
 	<dependencyManagement>

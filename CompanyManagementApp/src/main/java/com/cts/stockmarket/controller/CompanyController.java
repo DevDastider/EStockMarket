@@ -1,7 +1,6 @@
 package com.cts.stockmarket.controller;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,29 +20,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cts.stockmarket.exceptions.CompanyIDAlreadyExistsException;
 import com.cts.stockmarket.model.Company;
+import com.cts.stockmarket.model.Stock;
 import com.cts.stockmarket.response.ResponseHandler;
 import com.cts.stockmarket.service.DataPublisher;
 import com.cts.stockmarket.service.ICompanyService;
+import com.cts.stockmarket.service.IStockService;
 
 @RestController
 @RequestMapping("/api/v1.0/market")
+@CrossOrigin("*")
 public class CompanyController {
 	
 	@Autowired
 	private ICompanyService companyService;
 	
+	@Autowired
+	private IStockService stockService;
+	
 //	@Autowired
 //	private DiscoveryClient discoveryClient;
 	
-	@Autowired
-	private DataPublisher dataPublisher;
+//	@Autowired
+//	private DataPublisher dataPublisher;
 
 	@GetMapping("/company/getall")
 	public ResponseEntity<?> getAllCompanysDetails() throws RestClientException, Exception {
@@ -53,10 +58,15 @@ public class CompanyController {
 		if (companyList != null) {
 			//CacheControl cacheControl=CacheControl.maxAge(5,TimeUnit.MINUTES);
 			
-//			return ResponseEntity.ok()
-//					.cacheControl(cacheControl)
-//					.body(ResponseHandler.generateResponse("Succesfully retrieved the data", HttpStatus.OK, companyList));
-			return (ResponseHandler.generateResponse("Succesfully retrieved the data", HttpStatus.OK, companyList));
+			//return ResponseEntity.ok()
+					//.cacheControl(cacheControl)
+					//.body(ResponseHandler.generateResponse("Successfully retrieved the data", HttpStatus.OK, companyList));
+			
+			for(Company c: companyList) {
+				List<Stock> stockRecords= stockService.getAllStockByCompanyCode(c.getCompanyCode());
+				c.setStockList(stockRecords);
+			}
+			return (ResponseHandler.generateResponse("Successfully retrieved the data", HttpStatus.OK, companyList));
 		}
 
 		return ResponseHandler.generateResponse("List Empty", HttpStatus.NO_CONTENT, "Company List is empty!");
@@ -67,6 +77,9 @@ public class CompanyController {
 		Company company = companyService.getCompanyDetailsById(companyCode);
 
 		if (company != null) {
+			List<Stock> stockRecords= stockService.getAllStockByCompanyCode(company.getCompanyCode());
+			company.setStockList(stockRecords);
+			
 			return ResponseHandler.generateResponse("Succesfully retrieved the data", HttpStatus.OK, company);
 		}
 
@@ -81,9 +94,9 @@ public class CompanyController {
 			if (companyService.addCompany(company) != null) {
 				return ResponseHandler.generateResponse("Succesfully data added", HttpStatus.CREATED, company);
 			} else
-				return ResponseHandler.generateResponse("Sorry data is not inserted!", HttpStatus.CONFLICT, "Company code exists");	//new ResponseEntity<String>("Sorry data is not inserted!", HttpStatus.CONFLICT);
+				return ResponseHandler.generateResponse("Sorry data is not inserted!", HttpStatus.CONFLICT, "Company code "+ company.getCompanyCode() + " exists");
 		} else
-			return ResponseHandler.generateResponse("Sorry company turnover is not sufficient!", HttpStatus.NOT_ACCEPTABLE, "Minimum turnover of Rs.100000000 required");//new ResponseEntity<String>("Sorry company turnover is not sufficient!", HttpStatus.NOT_ACCEPTABLE);
+			return ResponseHandler.generateResponse("Sorry company turnover is not sufficient!", HttpStatus.NOT_ACCEPTABLE, "Minimum turnover of Rs.100000000 required");
 	}
 
 	
@@ -95,8 +108,8 @@ public class CompanyController {
 		  if (existingCompany!=null) {
 			  existingCompany.setStockPrice(company.getStockPrice());
 			  
-			  if(companyService.updateStockPrice(existingCompany))
-				  return ResponseHandler.generateResponse("Price added", HttpStatus.OK, company);
+			  if(companyService.updateStockPrice(existingCompany) && stockService.addStock(existingCompany))
+				  return ResponseHandler.generateResponse("Price added", HttpStatus.OK, existingCompany);
 			  
 		  }
 		  
@@ -105,8 +118,8 @@ public class CompanyController {
 	 
 
 	@DeleteMapping("/company/delete/{sId}")
-	public ResponseEntity<?> deleteCompany(@PathVariable("sId") int companyCode) {
-		if (companyService.deleteCompany(companyCode))
+	public ResponseEntity<?> deleteCompany(@PathVariable("sId") int companyCode){
+		if (companyService.deleteCompany(companyCode) && stockService.deleteStock(companyCode))
 			return ResponseHandler.generateResponse("Deleted", HttpStatus.NO_CONTENT, "Company record deleted");
 
 		else
@@ -115,16 +128,16 @@ public class CompanyController {
 
 	@PutMapping(value="/stock/put/{sId}") 
 	public ResponseEntity<?> updateStockPrice(@PathVariable("sId") int companyCode, @RequestBody Company company){
-		  
+		
 		Company existingCompany= companyService.getCompanyDetailsById(companyCode);
 		
 		if (existingCompany!=null) {
 			//double prevPrice= existingCompany.getStockPrice();
 			existingCompany.setStockPrice(company.getStockPrice());
 			  
-			if(companyService.updateStockPrice(existingCompany)) {
+			if(companyService.updateStockPrice(existingCompany) && stockService.addStock(existingCompany)) {
 				//Adding update in Kafka
-//				String updateMsg= existingCompany.getCompanyName()+ "-> Previous price: "+ prevPrice + "New Price: "+ company.getStockExchange(); 
+//				String updateMsg= existingCompany.getCompanyName()+ "-> Previous price: "+ prevPrice + "New Price: "+ company.getStockPrice(); 
 //				dataPublisher.setTemplate(updateMsg);
 			  
 				return ResponseHandler.generateResponse("Price updated", HttpStatus.CREATED, existingCompany);

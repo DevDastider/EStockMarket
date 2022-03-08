@@ -1,10 +1,9 @@
-package com.cts.company;
+package com.cts.stockmarket;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.cts.stockmarket.CompanyManagementAppApplication;
-
+@SpringBootTest
 class CompanyManagementAppApplicationTests {
 
 	@Test
